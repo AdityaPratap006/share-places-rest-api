@@ -29,9 +29,9 @@ export class PlacesRouteController extends AbstractRouteController {
         const placeId = req.params.pid;
 
         try {
-            const response = await PlacesService.getPlace(placeId);
+            const place = await PlacesService.getPlace(placeId);
 
-            res.status(StatusConstants.CODE_200).json(response);
+            res.status(StatusConstants.CODE_200).json({ place });
 
         } catch (error) {
 
@@ -45,7 +45,7 @@ export class PlacesRouteController extends AbstractRouteController {
         try {
             const places = await PlacesService.getAll();
 
-            res.status(StatusConstants.CODE_200).json(places);
+            res.status(StatusConstants.CODE_200).json({ places });
 
         } catch (error) {
 
