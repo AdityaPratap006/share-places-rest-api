@@ -2,6 +2,7 @@ import { Express } from 'express';
 import {
     AbstractRouteController,
     HelloWorldRouteController,
+    GetPlaceRouteController
 } from '../routes';
 
 export class InitializeRoutes {
@@ -17,6 +18,7 @@ export class InitializeRoutes {
         let routes: AbstractRouteController[] = [];
 
         routes.push(new HelloWorldRouteController());
+        routes.push(new GetPlaceRouteController());
 
         return Promise.resolve(routes);
     }

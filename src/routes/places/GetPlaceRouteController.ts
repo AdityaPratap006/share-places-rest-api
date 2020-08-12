@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { AbstractRouteController } from '../../AbstractRouteController';
-import { StatusConstants } from '../../../constants/StatusConstants';
+import { AbstractRouteController } from '../AbstractRouteController';
+import { StatusConstants } from '../../constants/StatusConstants';
 // --import the required service here--
 
 export class GetPlaceRouteController extends AbstractRouteController {
