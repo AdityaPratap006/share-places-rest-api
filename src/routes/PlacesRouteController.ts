@@ -16,7 +16,7 @@ export class PlacesRouteController extends AbstractRouteController {
     }
 
     public async InitializeGetPlaceById() {
-        this.router.get(`${this.path}/:pid`, this.getPlaceById.bind(this)).bind(this);
+        this.router.get(`${this.path}/:pid`, this.getPlaceById);
     }
 
     public async getPlaceById(req: Request<{ pid: string }>, res: Response): Promise<void> {
