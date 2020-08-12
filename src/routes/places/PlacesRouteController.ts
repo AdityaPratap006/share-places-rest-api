@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { AbstractRouteController } from '../AbstractRouteController';
 import { StatusConstants } from '../../constants/StatusConstants';
-// --import the required service here--
+import { PlacesService } from '../../services/Places';
 
-export class GetPlaceRouteController extends AbstractRouteController {
+export class PlacesRouteController extends AbstractRouteController {
 
     constructor() {
         super();
@@ -15,10 +15,16 @@ export class GetPlaceRouteController extends AbstractRouteController {
 
         const placeId = req.params.pid;
 
-        const response = {
-            placeId,
-        };
+        try {
+            const response = await PlacesService.getPlaceById(placeId);
 
-        res.status(StatusConstants.CODE_200).send(response);
+            res.status(StatusConstants.CODE_200).json(response);
+
+        } catch (error) {
+
+            res.status(StatusConstants.CODE_404).json({
+                error: (error as Error).message,
+            });
+        }
     }
 }

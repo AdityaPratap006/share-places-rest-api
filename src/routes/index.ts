@@ -1,3 +1,3 @@
 export * from './AbstractRouteController';
 export * from './controllers/HelloWorldRouteController';
-export * from './places/GetPlaceRouteController';
+export * from './places/PlacesRouteController';
