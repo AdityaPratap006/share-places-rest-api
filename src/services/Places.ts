@@ -28,7 +28,7 @@ const DUMMY_PLACES: Place[] = [
 ];
 
 export class PlacesService {
-    public static async getPlaceById(placeId: string): Promise<Place> {
+    public static async getPlace(placeId: string): Promise<Place> {
         const place = DUMMY_PLACES.find(pl => pl.id === placeId);
 
         if (!place) {
