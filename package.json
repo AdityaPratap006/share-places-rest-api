@@ -23,7 +23,7 @@
     "postinstall": "npm run build"
   },
   "engines": {
-    "node": "12.18.3"
+    "node": "12.x"
   },
   "keywords": [],
   "author": "aditya-pratap",
