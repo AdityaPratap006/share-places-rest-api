@@ -1,17 +1,14 @@
 import express, { Express, Request, Response } from 'express';
 import { InitializeMiddleware } from './InitializeMiddleware';
+import { InitializeRoutes } from './InitializeRoutes';
 
 export async function runServer() {
     const app: Express = express();
     const PORT = process.env.PORT || 4000;
 
     await InitializeMiddleware.InitializeCommonMiddleware(app);
-    // --initialize routes here--
-    app.get('/', (req: Request, res: Response) => {
-        res.send({
-            message: 'Hi there!',
-        });
-    });
+
+    await InitializeRoutes.Initialze(app);
 
     await InitializeMiddleware.InitializeErrorHandlingMiddleware(app);
 
