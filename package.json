@@ -22,7 +22,10 @@
     "start": "node build/index.js",
     "postinstall": "npm run build"
   },
+  "engines": {
+    "node": "12.18.3"
+  },
   "keywords": [],
-  "author": "",
+  "author": "aditya-pratap",
   "license": "ISC"
 }
