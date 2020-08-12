@@ -37,4 +37,14 @@ export class PlacesService {
 
         return Promise.resolve(place);
     }
+
+    public static async getAll(): Promise<Place[]> {
+        const places = DUMMY_PLACES;
+
+        if (!places) {
+            throw Error(`places not found!`);
+        }
+
+        return Promise.resolve(places);
+    }
 }

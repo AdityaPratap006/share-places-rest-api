@@ -13,10 +13,15 @@ export class PlacesRouteController extends AbstractRouteController {
 
     public async InitializeController() {
         await this.InitializeGetPlaceById();
+        await this.InitializeGetAllPlaces();
     }
 
     public async InitializeGetPlaceById() {
         this.router.get(`${this.path}/:pid`, this.getPlaceById);
+    }
+
+    public async InitializeGetAllPlaces() {
+        this.router.get(`${this.path}/`, this.getAllPlaces);
     }
 
     public async getPlaceById(req: Request<{ pid: string }>, res: Response): Promise<void> {
@@ -27,6 +32,20 @@ export class PlacesRouteController extends AbstractRouteController {
             const response = await PlacesService.getPlace(placeId);
 
             res.status(StatusConstants.CODE_200).json(response);
+
+        } catch (error) {
+
+            res.status(StatusConstants.CODE_404).json({
+                error: (error as Error).message,
+            });
+        }
+    }
+
+    public async getAllPlaces(req: Request, res: Response): Promise<void> {
+        try {
+            const places = await PlacesService.getAll();
+
+            res.status(StatusConstants.CODE_200).json(places);
 
         } catch (error) {
 
