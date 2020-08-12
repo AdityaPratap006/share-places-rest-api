@@ -8,7 +8,7 @@ export abstract class AbstractRouteController {
     public async InitializeController() {
         console.log(this.path);
         await this.InitializeGet();
-        await this.InitializeGet();
+        await this.InitializePost();
     }
 
     public async runService(req: Request, res: Response): Promise<any> {

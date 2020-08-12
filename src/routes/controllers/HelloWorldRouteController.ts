@@ -10,6 +10,11 @@ export class HelloWorldRouteController extends AbstractRouteController {
         this.InitializeController();
     }
 
+    public async InitializeController() {
+        console.log('Override: only get helloworld');
+        await this.InitializeGet();
+    }
+
     public async runService(req: Request, res: Response): Promise<any> {
 
         const response = await HelloWorld.wishHello();
