@@ -47,4 +47,14 @@ export class PlacesService {
 
         return Promise.resolve(places);
     }
+
+    public static async getPlacesByUser(userId: string): Promise<Place[]> {
+        const userPlaces = DUMMY_PLACES.filter(pl => pl.creatorId === userId);
+
+        if (!userPlaces) {
+            throw Error(`places not found!`);
+        }
+
+        return Promise.resolve(userPlaces);
+    }
 }

@@ -14,6 +14,7 @@ export class PlacesRouteController extends AbstractRouteController {
     public async InitializeController() {
         await this.InitializeGetPlaceById();
         await this.InitializeGetAllPlaces();
+        await this.InitializeGetUserPlaces();
     }
 
     public async InitializeGetPlaceById() {
@@ -24,11 +25,13 @@ export class PlacesRouteController extends AbstractRouteController {
         this.router.get(`${this.path}/`, this.getAllPlaces);
     }
 
+    public async InitializeGetUserPlaces() {
+        this.router.get(`${this.path}/user/:uid`, this.getUserPlaces);
+    }
+
     public async getPlaceById(req: Request<{ pid: string }>, res: Response): Promise<void> {
-
-        const placeId = req.params.pid;
-
         try {
+            const placeId = req.params.pid;
             const place = await PlacesService.getPlace(placeId);
 
             res.status(StatusConstants.CODE_200).json({ place });
@@ -41,12 +44,26 @@ export class PlacesRouteController extends AbstractRouteController {
         }
     }
 
-    public async getAllPlaces(req: Request, res: Response): Promise<void> {
+    public async getAllPlaces(_: Request, res: Response): Promise<void> {
         try {
             const places = await PlacesService.getAll();
 
             res.status(StatusConstants.CODE_200).json({ places });
 
+        } catch (error) {
+
+            res.status(StatusConstants.CODE_404).json({
+                error: (error as Error).message,
+            });
+        }
+    }
+
+    public async getUserPlaces(req: Request<{ uid: string }>, res: Response): Promise<void> {
+        try {
+            const userId = req.params.uid;
+            const userPlaces = await PlacesService.getPlacesByUser(userId);
+
+            res.status(StatusConstants.CODE_200).json({ places: userPlaces });
         } catch (error) {
 
             res.status(StatusConstants.CODE_404).json({
