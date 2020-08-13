@@ -16,5 +16,6 @@ export class InitializeMiddleware {
 
         await errorMiddleware.handle404Error();
         await errorMiddleware.handle500Error();
+        await errorMiddleware.handleError();
     }
 }

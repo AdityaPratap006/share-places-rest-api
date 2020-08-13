@@ -1,6 +1,7 @@
-import { Express } from 'express'
+import { Express, ErrorRequestHandler, NextFunction } from 'express'
 import { Response, Request } from 'express'
 import { StatusConstants } from '../constants/StatusConstants'
+import { ServiceError } from '../utils/errors/ServiceError';
 
 export class ErrorHandlingMiddleware {
 
@@ -24,6 +25,28 @@ export class ErrorHandlingMiddleware {
                 message: StatusConstants.CODE_500_MESSAGE,
             });
         });
+    }
+
+    public async handleError() {
+
+        const errorHandler: ErrorRequestHandler = (
+            error: ServiceError,
+            req: Request,
+            res: Response,
+            next: NextFunction
+        ) => {
+
+            if (res.headersSent) {
+                next(error);
+                return;
+            }
+
+            res.status(error.code || StatusConstants.CODE_500).json({
+                message: error.message || StatusConstants.CODE_500_MESSAGE,
+            });
+        }
+
+        this.app.use(errorHandler);
     }
 
 }

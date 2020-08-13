@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { AbstractRouteController } from './AbstractRouteController';
 import { StatusConstants } from '../constants/StatusConstants';
 import { PlacesService } from '../services/Places';
@@ -30,7 +30,7 @@ export class PlacesRouteController extends AbstractRouteController {
         this.router.get(`${this.path}/user/:uid`, this.getUserPlaces);
     }
 
-    public async getPlaceById(req: Request<{ pid: string }>, res: Response): Promise<void> {
+    public async getPlaceById(req: Request<{ pid: string }>, res: Response, next: NextFunction): Promise<void> {
         try {
             const placeId = req.params.pid;
             const place = await PlacesService.getPlace(placeId);
@@ -39,38 +39,31 @@ export class PlacesRouteController extends AbstractRouteController {
 
         } catch (e) {
             const error = e as ServiceError;
-
-            res.status(error.code).json({
-                message: error.message,
-            });
+            next(error);
         }
     }
 
-    public async getAllPlaces(_: Request, res: Response): Promise<void> {
+    public async getAllPlaces(_: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const places = await PlacesService.getAll();
 
             res.status(StatusConstants.CODE_200).json({ places });
 
-        } catch (error) {
-
-            res.status(StatusConstants.CODE_404).json({
-                error: (error as Error).message,
-            });
+        } catch (e) {
+            const error = e as ServiceError;
+            next(error);
         }
     }
 
-    public async getUserPlaces(req: Request<{ uid: string }>, res: Response): Promise<void> {
+    public async getUserPlaces(req: Request<{ uid: string }>, res: Response, next: NextFunction): Promise<void> {
         try {
             const userId = req.params.uid;
             const userPlaces = await PlacesService.getPlacesByUser(userId);
 
             res.status(StatusConstants.CODE_200).json({ places: userPlaces });
-        } catch (error) {
-
-            res.status(StatusConstants.CODE_404).json({
-                error: (error as Error).message,
-            });
+        } catch (e) {
+            const error = e as ServiceError;
+            next(error);
         }
     }
 }
