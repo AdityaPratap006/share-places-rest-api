@@ -3,6 +3,11 @@ import { AbstractRouteController } from './AbstractRouteController';
 import { StatusConstants } from '../constants/StatusConstants';
 import { PlacesService } from '../services/PlacesService';
 import { ServiceError } from '../utils/errors/ServiceError';
+import { PlacePostRequestBody } from '../models';
+
+interface PlacePostRequest extends Request {
+    body: PlacePostRequestBody
+}
 
 export class PlacesRouteController extends AbstractRouteController {
 
@@ -16,6 +21,7 @@ export class PlacesRouteController extends AbstractRouteController {
         await this.InitializeGetPlaceById();
         await this.InitializeGetAllPlaces();
         await this.InitializeGetUserPlaces();
+        await this.InitializePostPlace();
     }
 
     public async InitializeGetPlaceById() {
@@ -28,6 +34,10 @@ export class PlacesRouteController extends AbstractRouteController {
 
     public async InitializeGetUserPlaces() {
         this.router.get(`${this.path}/user/:uid`, this.getUserPlaces);
+    }
+
+    public async InitializePostPlace() {
+        this.router.post(`${this.path}/`, this.postPlace);
     }
 
     public async getPlaceById(req: Request<{ pid: string }>, res: Response, next: NextFunction): Promise<void> {
@@ -65,5 +75,21 @@ export class PlacesRouteController extends AbstractRouteController {
             const error = e as ServiceError;
             next(error);
         }
+    }
+
+    public async postPlace(req: PlacePostRequest, res: Response, next: NextFunction): Promise<void> {
+        const placeData = req.body;
+
+        try {
+            await PlacesService.createPlace(placeData);
+
+            res.status(StatusConstants.CODE_201).json({
+                message: `place created`,
+            })
+        } catch (e) {
+            const error = e as ServiceError;
+            next(error);
+        }
+
     }
 }

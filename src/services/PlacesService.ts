@@ -1,4 +1,4 @@
-import { Place } from '../models';
+import { Place, PlacePostRequestBody } from '../models';
 import { ServiceError } from '../utils/errors/ServiceError';
 import { StatusConstants } from '../constants/StatusConstants';
 
@@ -61,5 +61,19 @@ export class PlacesService {
         }
 
         return Promise.resolve(userPlaces);
+    }
+
+    public static async createPlace(placeData: PlacePostRequestBody): Promise<void> {
+        const place: Place = {
+            title: placeData.title,
+            address: placeData.address,
+            creatorId: placeData.creatorId,
+            description: placeData.description,
+            location: placeData.coordinates,
+            id: `p${DUMMY_PLACES.length + 1}`,
+            imageURL: `dummy-url-${placeData.title}`,
+        };
+
+        DUMMY_PLACES.push(place);
     }
 }
