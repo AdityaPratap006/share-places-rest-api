@@ -1,4 +1,6 @@
 import { Place } from '../models';
+import { ServiceError } from '../utils/errors/ServiceError';
+import { StatusConstants } from '../constants/StatusConstants';
 
 const DUMMY_PLACES: Place[] = [
     {
@@ -32,7 +34,8 @@ export class PlacesService {
         const place = DUMMY_PLACES.find(pl => pl.id === placeId);
 
         if (!place) {
-            throw Error(`place not found!`);
+            const error = new ServiceError(`place not found!`, StatusConstants.CODE_404);
+            throw error;
         }
 
         return Promise.resolve(place);
@@ -42,7 +45,8 @@ export class PlacesService {
         const places = DUMMY_PLACES;
 
         if (!places) {
-            throw Error(`places not found!`);
+            const error = new ServiceError(`places not found!`, StatusConstants.CODE_404);
+            throw error;
         }
 
         return Promise.resolve(places);
@@ -52,7 +56,8 @@ export class PlacesService {
         const userPlaces = DUMMY_PLACES.filter(pl => pl.creatorId === userId);
 
         if (!userPlaces) {
-            throw Error(`places not found!`);
+            const error = new ServiceError(`places not found!`, StatusConstants.CODE_404);
+            throw error;
         }
 
         return Promise.resolve(userPlaces);

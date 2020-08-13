@@ -1,4 +1,6 @@
 import { User } from '../models';
+import { ServiceError } from '../utils/errors/ServiceError';
+import { StatusConstants } from '../constants/StatusConstants';
 
 const USERS: User[] = [
     {
@@ -22,7 +24,8 @@ export class UsersService {
         const user = USERS.find(u => u.id === userId);
 
         if (!user) {
-            throw Error(`user not found`);
+            const error = new ServiceError(`user not found`, StatusConstants.CODE_404);
+            throw error;
         }
 
         return Promise.resolve(user);

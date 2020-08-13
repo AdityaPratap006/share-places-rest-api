@@ -12,13 +12,17 @@ export class ErrorHandlingMiddleware {
 
     public async handle404Error() {
         this.app.use((req: Request, res: Response) => {
-            res.status(StatusConstants.CODE_404).send(StatusConstants.CODE_404_MESSAGE);
+            res.status(StatusConstants.CODE_404).send({
+                message: StatusConstants.CODE_404_MESSAGE,
+            });
         })
     }
 
     public async handle500Error() {
         this.app.use((req: Request, res: Response) => {
-            res.status(StatusConstants.CODE_500).send(StatusConstants.CODE_500_MESSAGE);
+            res.status(StatusConstants.CODE_500).send({
+                message: StatusConstants.CODE_500_MESSAGE,
+            });
         });
     }
 

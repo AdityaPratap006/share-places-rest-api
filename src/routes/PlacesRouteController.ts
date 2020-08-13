@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { AbstractRouteController } from './AbstractRouteController';
 import { StatusConstants } from '../constants/StatusConstants';
 import { PlacesService } from '../services/Places';
+import { ServiceError } from '../utils/errors/ServiceError';
 
 export class PlacesRouteController extends AbstractRouteController {
 
@@ -36,10 +37,11 @@ export class PlacesRouteController extends AbstractRouteController {
 
             res.status(StatusConstants.CODE_200).json({ place });
 
-        } catch (error) {
+        } catch (e) {
+            const error = e as ServiceError;
 
-            res.status(StatusConstants.CODE_404).json({
-                error: (error as Error).message,
+            res.status(error.code).json({
+                message: error.message,
             });
         }
     }
