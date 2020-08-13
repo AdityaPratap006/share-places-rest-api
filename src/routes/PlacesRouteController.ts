@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { AbstractRouteController } from './AbstractRouteController';
 import { StatusConstants } from '../constants/StatusConstants';
-import { PlacesService } from '../services/Places';
+import { PlacesService } from '../services/PlacesService';
 import { ServiceError } from '../utils/errors/ServiceError';
 
 export class PlacesRouteController extends AbstractRouteController {
