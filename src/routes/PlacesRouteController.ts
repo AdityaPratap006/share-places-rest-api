@@ -81,14 +81,19 @@ export class PlacesRouteController extends AbstractRouteController {
         const placeData = req.body;
 
         try {
-            await PlacesService.createPlace(placeData);
+            const place = await PlacesService.createPlace(placeData);
 
-            res.status(StatusConstants.CODE_201).json({
-                message: `place created`,
-            })
+            res.status(StatusConstants.CODE_201).json({ place });
         } catch (e) {
             const error = e as ServiceError;
-            next(error);
+            if (error.code) {
+                next(error);
+            } else {
+                error.code = StatusConstants.CODE_500;
+                error.message = StatusConstants.CODE_500_MESSAGE;
+
+                next(error);
+            }
         }
 
     }
