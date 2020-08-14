@@ -45,7 +45,7 @@ export class PlacesService {
     public static async getAll(): Promise<Place[]> {
         const places = DUMMY_PLACES;
 
-        if (!places) {
+        if (!places || places.length === 0) {
             const error = new ServiceError(`places not found!`, StatusConstants.CODE_404);
             throw error;
         }
@@ -56,7 +56,7 @@ export class PlacesService {
     public static async getPlacesByUser(userId: string): Promise<Place[]> {
         const userPlaces = DUMMY_PLACES.filter(pl => pl.creatorId === userId);
 
-        if (!userPlaces) {
+        if (!userPlaces || userPlaces.length === 0) {
             const error = new ServiceError(`places not found!`, StatusConstants.CODE_404);
             throw error;
         }

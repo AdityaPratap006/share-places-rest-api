@@ -23,7 +23,7 @@ export class UsersService {
     public static async getUsers(): Promise<User[]> {
         const users = USERS;
 
-        if (!users || users.length) {
+        if (!users || users.length === 0) {
             const error = new ServiceError(`users not found`, StatusConstants.CODE_404);
             throw error;
         }
