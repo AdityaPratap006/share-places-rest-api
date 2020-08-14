@@ -42,7 +42,7 @@ export class ErrorHandlingMiddleware {
             }
 
             res.status(error.code || StatusConstants.CODE_500).json({
-                message: error.message || StatusConstants.CODE_500_MESSAGE,
+                message: error.code ? error.message : StatusConstants.CODE_500_MESSAGE,
             });
         }
 

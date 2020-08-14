@@ -1,4 +1,4 @@
-import * as uuid from 'uuid';
+import uuid from 'uuid';
 import { Place, PlacePostRequestBody } from '../models';
 import { ServiceError } from '../utils/errors/ServiceError';
 import { StatusConstants } from '../constants/StatusConstants';

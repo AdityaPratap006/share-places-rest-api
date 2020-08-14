@@ -86,14 +86,7 @@ export class PlacesRouteController extends AbstractRouteController {
             res.status(StatusConstants.CODE_201).json({ place });
         } catch (e) {
             const error = e as ServiceError;
-            if (error.code) {
-                next(error);
-            } else {
-                error.code = StatusConstants.CODE_500;
-                error.message = StatusConstants.CODE_500_MESSAGE;
-
-                next(error);
-            }
+            next(error);
         }
 
     }
