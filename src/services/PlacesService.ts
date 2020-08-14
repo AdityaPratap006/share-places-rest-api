@@ -1,5 +1,5 @@
-import uuid from 'uuid';
-import { Place, PlacePostRequestBody } from '../models';
+import * as uuid from 'uuid';
+import { Place } from '../models';
 import { ServiceError } from '../utils/errors/ServiceError';
 import { StatusConstants } from '../constants/StatusConstants';
 
@@ -64,7 +64,7 @@ export class PlacesService {
         return Promise.resolve(userPlaces);
     }
 
-    public static async createPlace(placeData: PlacePostRequestBody): Promise<Place> {
+    public static async createPlace(placeData: Place): Promise<Place> {
         const place: Place = {
             id: uuid.v4(),
             title: placeData.title,
@@ -72,7 +72,7 @@ export class PlacesService {
             creatorId: placeData.creatorId,
             description: placeData.description,
             imageURL: `dummy-url-${placeData.title}`,
-            location: placeData.coordinates,
+            location: placeData.location,
         };
 
         console.log({ place });

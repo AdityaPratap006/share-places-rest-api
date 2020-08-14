@@ -3,11 +3,7 @@ import { AbstractRouteController } from './AbstractRouteController';
 import { StatusConstants } from '../constants/StatusConstants';
 import { PlacesService } from '../services/PlacesService';
 import { ServiceError } from '../utils/errors/ServiceError';
-import { PlacePostRequestBody } from '../models';
-
-interface PlacePostRequest extends Request {
-    body: PlacePostRequestBody
-}
+import { Place } from '../models';
 
 export class PlacesRouteController extends AbstractRouteController {
 
@@ -77,8 +73,8 @@ export class PlacesRouteController extends AbstractRouteController {
         }
     }
 
-    public async postPlace(req: PlacePostRequest, res: Response, next: NextFunction): Promise<void> {
-        const placeData = req.body;
+    public async postPlace(req: Request<{}, {}, { place: Place }>, res: Response, next: NextFunction): Promise<void> {
+        const placeData: Place = req.body.place;
 
         try {
             const place = await PlacesService.createPlace(placeData);

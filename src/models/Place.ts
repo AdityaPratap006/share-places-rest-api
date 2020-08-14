@@ -10,14 +10,3 @@ export interface Place {
         lng: number;
     };
 }
-
-export interface PlacePostRequestBody {
-    title: string;
-    description: string;
-    address: string;
-    creatorId: string;
-    coordinates: {
-        lat: number;
-        lng: number;
-    };
-}
