@@ -4,7 +4,7 @@ import { InitializeRoutes } from './InitializeRoutes';
 
 export async function runServer() {
     const app: Express = express();
-    const PORT = process.env.PORT || 4000;
+    const PORT = process.env.PORT || 5000;
 
     await InitializeMiddleware.InitializeCommonMiddleware(app);
 
