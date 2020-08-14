@@ -33,6 +33,14 @@ export class UsersService {
     }
 
     public static async signup(username: string, email: string, password: string): Promise<User> {
+
+        const existingUser = USERS.find(u => u.email === email);
+
+        if (existingUser) {
+            const error = new ServiceError(`could not create user, email already exists.`, StatusConstants.CODE_401);
+            throw error;
+        }
+
         const createdUser: User = {
             id: uuid.v4(),
             name: username,
