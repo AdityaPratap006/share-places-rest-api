@@ -20,14 +20,14 @@ const USERS: User[] = [
 ];
 
 export class UsersService {
-    public static async getUser(userId: string): Promise<User> {
-        const user = USERS.find(u => u.id === userId);
+    public static async getUsers(): Promise<User[]> {
+        const users = USERS;
 
-        if (!user) {
-            const error = new ServiceError(`user not found`, StatusConstants.CODE_404);
+        if (!users || users.length) {
+            const error = new ServiceError(`users not found`, StatusConstants.CODE_404);
             throw error;
         }
 
-        return Promise.resolve(user);
+        return Promise.resolve(users);
     }
 }
