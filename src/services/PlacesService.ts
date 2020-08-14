@@ -75,8 +75,6 @@ export class PlacesService {
             location: placeData.location,
         };
 
-        console.log({ place });
-
         DUMMY_PLACES.push(place);
 
         return Promise.resolve(place);
@@ -101,5 +99,16 @@ export class PlacesService {
         DUMMY_PLACES[placeIndex] = updatedPlace;
 
         return Promise.resolve(updatedPlace);
+    }
+
+    public static async removePlace(placeId: string): Promise<void> {
+        const placeIndex = DUMMY_PLACES.findIndex(p => p.id === placeId);
+
+        if (placeIndex === -1) {
+            const error = new ServiceError(`place not found!`, StatusConstants.CODE_404);
+            throw error;
+        }
+
+        DUMMY_PLACES.splice(placeIndex, 1);
     }
 }

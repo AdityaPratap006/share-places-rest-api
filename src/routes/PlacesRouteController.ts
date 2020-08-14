@@ -19,6 +19,7 @@ export class PlacesRouteController extends AbstractRouteController {
         await this.InitializeGetUserPlaces();
         await this.InitializePostPlace();
         await this.InitializeUpdatePlace();
+        await this.InitializeDeletePlace();
     }
 
     public async InitializeGetPlaceById() {
@@ -39,6 +40,10 @@ export class PlacesRouteController extends AbstractRouteController {
 
     public async InitializeUpdatePlace() {
         this.router.patch(`${this.path}/:pid`, this.updatePlace);
+    }
+
+    public async InitializeDeletePlace() {
+        this.router.delete(`${this.path}/:pid`, this.deletePlace);
     }
 
     public async getPlaceById(req: Request<{ pid: string }>, res: Response, next: NextFunction): Promise<void> {
@@ -100,6 +105,21 @@ export class PlacesRouteController extends AbstractRouteController {
             const place = await PlacesService.modifyPlace(placeId, placeData);
 
             res.status(StatusConstants.CODE_200).json({ place });
+        } catch (e) {
+            const error = e as ServiceError;
+            next(error);
+        }
+    }
+
+    public async deletePlace(req: Request<{ pid: string }>, res: Response, next: NextFunction): Promise<void> {
+        const placeId = req.params.pid;
+
+        try {
+            await PlacesService.removePlace(placeId);
+
+            res.status(StatusConstants.CODE_200).json({
+                message: `deleted place with id: ${placeId}`,
+            });
         } catch (e) {
             const error = e as ServiceError;
             next(error);
