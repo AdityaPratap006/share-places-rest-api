@@ -81,4 +81,25 @@ export class PlacesService {
 
         return Promise.resolve(place);
     }
+
+    public static async modifyPlace(placeId: string, placeData: Place): Promise<Place> {
+        const placeIndex = DUMMY_PLACES.findIndex(p => p.id === placeId);
+
+        if (placeIndex === -1) {
+            const error = new ServiceError(`place not found!`, StatusConstants.CODE_404);
+            throw error;
+        }
+
+        const { title, description } = placeData;
+
+        const updatedPlace: Place = {
+            ...DUMMY_PLACES[placeIndex],
+            title,
+            description,
+        };
+
+        DUMMY_PLACES[placeIndex] = updatedPlace;
+
+        return Promise.resolve(updatedPlace);
+    }
 }

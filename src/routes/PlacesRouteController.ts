@@ -18,6 +18,7 @@ export class PlacesRouteController extends AbstractRouteController {
         await this.InitializeGetAllPlaces();
         await this.InitializeGetUserPlaces();
         await this.InitializePostPlace();
+        await this.InitializeUpdatePlace();
     }
 
     public async InitializeGetPlaceById() {
@@ -34,6 +35,10 @@ export class PlacesRouteController extends AbstractRouteController {
 
     public async InitializePostPlace() {
         this.router.post(`${this.path}/`, this.postPlace);
+    }
+
+    public async InitializeUpdatePlace() {
+        this.router.patch(`${this.path}/:pid`, this.updatePlace);
     }
 
     public async getPlaceById(req: Request<{ pid: string }>, res: Response, next: NextFunction): Promise<void> {
@@ -73,8 +78,8 @@ export class PlacesRouteController extends AbstractRouteController {
         }
     }
 
-    public async postPlace(req: Request<{}, {}, { place: Place }>, res: Response, next: NextFunction): Promise<void> {
-        const placeData: Place = req.body.place;
+    public async postPlace(req: Request<{}, {}, Place>, res: Response, next: NextFunction): Promise<void> {
+        const placeData = req.body;
 
         try {
             const place = await PlacesService.createPlace(placeData);
@@ -85,5 +90,19 @@ export class PlacesRouteController extends AbstractRouteController {
             next(error);
         }
 
+    }
+
+    public async updatePlace(req: Request<{ pid: string }, {}, Place>, res: Response, next: NextFunction): Promise<void> {
+        const placeId = req.params.pid;
+        const placeData = req.body;
+
+        try {
+            const place = await PlacesService.modifyPlace(placeId, placeData);
+
+            res.status(StatusConstants.CODE_200).json({ place });
+        } catch (e) {
+            const error = e as ServiceError;
+            next(error);
+        }
     }
 }
