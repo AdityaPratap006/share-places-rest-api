@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { check, validationResult } from 'express-validator';
 import { AbstractRouteController } from './AbstractRouteController';
 import { StatusConstants } from '../constants/StatusConstants';
 import { PlacesService } from '../services/PlacesService';
@@ -35,11 +36,26 @@ export class PlacesRouteController extends AbstractRouteController {
     }
 
     public async InitializePostPlace() {
-        this.router.post(`${this.path}/`, this.postPlace);
+        this.router.post(
+            `${this.path}/`,
+            [
+                check('title').not().isEmpty(),
+                check('description').isLength({ min: 5 }),
+                check('address').not().isEmpty(),
+            ],
+            this.postPlace
+        );
     }
 
     public async InitializeUpdatePlace() {
-        this.router.patch(`${this.path}/:pid`, this.updatePlace);
+        this.router.patch(
+            `${this.path}/:pid`,
+            [
+                check('title').not().isEmpty(),
+                check('description').isLength({ min: 5 }),
+            ],
+            this.updatePlace
+        );
     }
 
     public async InitializeDeletePlace() {
@@ -84,6 +100,13 @@ export class PlacesRouteController extends AbstractRouteController {
     }
 
     public async postPlace(req: Request<{}, {}, Place>, res: Response, next: NextFunction): Promise<void> {
+        const validationErrors = validationResult(req);
+        if (!validationErrors.isEmpty()) {
+            const error = new ServiceError(`Invalid inputs passed, please check your data.`, StatusConstants.CODE_422);
+            next(error);
+            return;
+        }
+
         const placeData = req.body;
 
         try {
@@ -98,6 +121,13 @@ export class PlacesRouteController extends AbstractRouteController {
     }
 
     public async updatePlace(req: Request<{ pid: string }, {}, Place>, res: Response, next: NextFunction): Promise<void> {
+        const validationErrors = validationResult(req);
+        if (!validationErrors.isEmpty()) {
+            const error = new ServiceError(`Invalid inputs passed, please check your data.`, StatusConstants.CODE_422);
+            next(error);
+            return;
+        }
+
         const placeId = req.params.pid;
         const placeData = req.body;
 
