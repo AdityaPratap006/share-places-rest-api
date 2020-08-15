@@ -2,6 +2,7 @@ import * as uuid from 'uuid';
 import { Place } from '../models';
 import { ServiceError } from '../utils/errors/ServiceError';
 import { StatusConstants } from '../constants/StatusConstants';
+import { getCoordinatesForAddress } from '../utils/googleMapsGeoCoding';
 
 const DUMMY_PLACES: Place[] = [
     {
@@ -65,6 +66,9 @@ export class PlacesService {
     }
 
     public static async createPlace(placeData: Place): Promise<Place> {
+
+        const coordinates = await getCoordinatesForAddress(placeData.address);
+
         const place: Place = {
             id: uuid.v4(),
             title: placeData.title,
@@ -72,7 +76,7 @@ export class PlacesService {
             creatorId: placeData.creatorId,
             description: placeData.description,
             imageURL: `dummy-url-${placeData.title}`,
-            location: placeData.location,
+            location: coordinates,
         };
 
         DUMMY_PLACES.push(place);
