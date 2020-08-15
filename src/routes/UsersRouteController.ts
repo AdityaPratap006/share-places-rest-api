@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { check, validationResult } from 'express-validator';
 import { AbstractRouteController } from './AbstractRouteController';
 import { StatusConstants } from '../constants/StatusConstants';
 import { UsersService } from '../services/UsersService';
@@ -34,7 +35,15 @@ export class UsersRouteController extends AbstractRouteController {
     }
 
     public async InitializeSignup() {
-        this.router.post(`${this.path}/signup`, this.signupUser);
+        this.router.post(
+            `${this.path}/signup`,
+            [
+                check('username').not().isEmpty(),
+                check('email').normalizeEmail().isEmail(),
+                check('password').isLength({ min: 6 }),
+            ],
+            this.signupUser
+        );
     }
 
     public async InitializeLogin() {
@@ -52,6 +61,13 @@ export class UsersRouteController extends AbstractRouteController {
     }
 
     public async signupUser(req: Request<{}, {}, UserSignupData>, res: Response, next: NextFunction) {
+        const validationErrors = validationResult(req);
+        if (!validationErrors.isEmpty()) {
+            const error = new ServiceError(`Invalid inputs passed, please check your data.`, StatusConstants.CODE_422);
+            next(error);
+            return;
+        }
+
         const { username, email, password } = req.body;
 
         try {
