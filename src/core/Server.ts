@@ -1,18 +1,26 @@
 import express, { Express } from 'express';
 import { InitializeMiddleware } from './InitializeMiddleware';
 import { InitializeRoutes } from './InitializeRoutes';
+import { InitializeDB } from './InitializeDB';
 
 export async function runServer() {
     const app: Express = express();
     const PORT = process.env.PORT || 5000;
 
-    await InitializeMiddleware.InitializeCommonMiddleware(app);
+    try {
+        await InitializeMiddleware.InitializeCommonMiddleware(app);
 
-    await InitializeRoutes.Initialze(app);
+        await InitializeRoutes.Initialze(app);
 
-    await InitializeMiddleware.InitializeErrorHandlingMiddleware(app);
+        await InitializeMiddleware.InitializeErrorHandlingMiddleware(app);
 
-    app.listen(PORT, () => {
-        console.log(`Server is listening on PORT: ${PORT}`);
-    });
+        await InitializeDB.Initialize();
+
+        app.listen(PORT, () => {
+            console.log(`Server is listening on PORT: ${PORT}`);
+        });
+
+    } catch (error) {
+        console.log({ error });
+    }
 }
