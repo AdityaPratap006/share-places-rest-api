@@ -7,7 +7,7 @@ export class UsersService {
         let users: IUserModel[] = [];
 
         try {
-            users = await User.find();
+            users = await User.find({}, '-password');
         } catch (e) {
             const error = new ServiceError(`fetching users failed, please try again`, StatusConstants.CODE_500);
             throw error;
