@@ -4,7 +4,7 @@ import { AbstractRouteController } from './AbstractRouteController';
 import { StatusConstants } from '../constants/StatusConstants';
 import { PlacesService } from '../services/PlacesService';
 import { ServiceError } from '../utils/errors/ServiceError';
-import { Place } from '../models';
+import { IPlace } from '../models';
 
 export class PlacesRouteController extends AbstractRouteController {
 
@@ -99,7 +99,7 @@ export class PlacesRouteController extends AbstractRouteController {
         }
     }
 
-    public async postPlace(req: Request<{}, {}, Place>, res: Response, next: NextFunction): Promise<void> {
+    public async postPlace(req: Request<{}, {}, IPlace>, res: Response, next: NextFunction): Promise<void> {
         const validationErrors = validationResult(req);
         if (!validationErrors.isEmpty()) {
             const error = new ServiceError(`Invalid inputs passed, please check your data.`, StatusConstants.CODE_422);
@@ -120,7 +120,7 @@ export class PlacesRouteController extends AbstractRouteController {
 
     }
 
-    public async updatePlace(req: Request<{ pid: string }, {}, Place>, res: Response, next: NextFunction): Promise<void> {
+    public async updatePlace(req: Request<{ pid: string }, {}, IPlace>, res: Response, next: NextFunction): Promise<void> {
         const validationErrors = validationResult(req);
         if (!validationErrors.isEmpty()) {
             const error = new ServiceError(`Invalid inputs passed, please check your data.`, StatusConstants.CODE_422);

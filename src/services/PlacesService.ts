@@ -1,10 +1,10 @@
 import * as uuid from 'uuid';
-import { Place } from '../models';
+import { IPlace } from '../models';
 import { ServiceError } from '../utils/errors/ServiceError';
 import { StatusConstants } from '../constants/StatusConstants';
 import { getCoordinatesForAddress } from '../utils/googleMapsGeoCoding';
 
-const DUMMY_PLACES: Place[] = [
+const DUMMY_PLACES: IPlace[] = [
     {
         id: 'p1',
         title: 'Times Square',
@@ -32,7 +32,7 @@ const DUMMY_PLACES: Place[] = [
 ];
 
 export class PlacesService {
-    public static async getPlace(placeId: string): Promise<Place> {
+    public static async getPlace(placeId: string): Promise<IPlace> {
         const place = DUMMY_PLACES.find(pl => pl.id === placeId);
 
         if (!place) {
@@ -43,7 +43,7 @@ export class PlacesService {
         return Promise.resolve(place);
     }
 
-    public static async getAll(): Promise<Place[]> {
+    public static async getAll(): Promise<IPlace[]> {
         const places = DUMMY_PLACES;
 
         if (!places || places.length === 0) {
@@ -54,7 +54,7 @@ export class PlacesService {
         return Promise.resolve(places);
     }
 
-    public static async getPlacesByUser(userId: string): Promise<Place[]> {
+    public static async getPlacesByUser(userId: string): Promise<IPlace[]> {
         const userPlaces = DUMMY_PLACES.filter(pl => pl.creatorId === userId);
 
         if (!userPlaces || userPlaces.length === 0) {
@@ -65,11 +65,11 @@ export class PlacesService {
         return Promise.resolve(userPlaces);
     }
 
-    public static async createPlace(placeData: Place): Promise<Place> {
+    public static async createPlace(placeData: IPlace): Promise<IPlace> {
 
         const coordinates = await getCoordinatesForAddress(placeData.address);
 
-        const place: Place = {
+        const place: IPlace = {
             id: uuid.v4(),
             title: placeData.title,
             address: placeData.address,
@@ -84,7 +84,7 @@ export class PlacesService {
         return Promise.resolve(place);
     }
 
-    public static async modifyPlace(placeId: string, placeData: Place): Promise<Place> {
+    public static async modifyPlace(placeId: string, placeData: IPlace): Promise<IPlace> {
         const placeIndex = DUMMY_PLACES.findIndex(p => p.id === placeId);
 
         if (placeIndex === -1) {
@@ -94,7 +94,7 @@ export class PlacesService {
 
         const { title, description } = placeData;
 
-        const updatedPlace: Place = {
+        const updatedPlace: IPlace = {
             ...DUMMY_PLACES[placeIndex],
             title,
             description,

@@ -1,9 +1,9 @@
 import * as uuid from 'uuid';
-import { User } from '../models';
+import { IUser } from '../models';
 import { ServiceError } from '../utils/errors/ServiceError';
 import { StatusConstants } from '../constants/StatusConstants';
 
-const USERS: User[] = [
+const USERS: IUser[] = [
     {
         id: 'u1',
         name: 'Aditya Pratap',
@@ -21,7 +21,7 @@ const USERS: User[] = [
 ];
 
 export class UsersService {
-    public static async getUsers(): Promise<User[]> {
+    public static async getUsers(): Promise<IUser[]> {
         const users = USERS;
 
         if (!users || users.length === 0) {
@@ -32,7 +32,7 @@ export class UsersService {
         return Promise.resolve(users);
     }
 
-    public static async signup(username: string, email: string, password: string): Promise<User> {
+    public static async signup(username: string, email: string, password: string): Promise<IUser> {
 
         const existingUser = USERS.find(u => u.email === email);
 
@@ -41,7 +41,7 @@ export class UsersService {
             throw error;
         }
 
-        const createdUser: User = {
+        const createdUser: IUser = {
             id: uuid.v4(),
             name: username,
             email,
@@ -54,7 +54,7 @@ export class UsersService {
         return Promise.resolve(createdUser);
     }
 
-    public static async login(email: string, password: string): Promise<User> {
+    public static async login(email: string, password: string): Promise<IUser> {
         const identifiedUser = USERS.find(u => u.email === email);
 
         if (identifiedUser === undefined || identifiedUser.password !== password) {
@@ -62,6 +62,6 @@ export class UsersService {
             throw error;
         }
 
-        return Promise.resolve(identifiedUser as User);
+        return Promise.resolve(identifiedUser);
     }
 }

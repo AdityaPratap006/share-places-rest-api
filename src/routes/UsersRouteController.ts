@@ -4,7 +4,7 @@ import { AbstractRouteController } from './AbstractRouteController';
 import { StatusConstants } from '../constants/StatusConstants';
 import { UsersService } from '../services/UsersService';
 import { ServiceError } from '../utils/errors/ServiceError';
-import { User } from '../models';
+import { IUser } from '../models';
 
 interface UserSignupData {
     username: string;
@@ -71,7 +71,7 @@ export class UsersRouteController extends AbstractRouteController {
         const { username, email, password } = req.body;
 
         try {
-            const createdUser: User = await UsersService.signup(username, email, password);
+            const createdUser: IUser = await UsersService.signup(username, email, password);
             res.status(StatusConstants.CODE_201).json({ user: createdUser });
         } catch (e) {
             const error = e as ServiceError;
