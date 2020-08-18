@@ -19,6 +19,7 @@ export class InitializeDB {
         return mongoose.connect(dbURI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
+            useCreateIndex: true,
         });
     }
 }

@@ -4,7 +4,6 @@ import { AbstractRouteController } from './AbstractRouteController';
 import { StatusConstants } from '../constants/StatusConstants';
 import { UsersService } from '../services/UsersService';
 import { ServiceError } from '../utils/errors/ServiceError';
-import { IUser } from '../models';
 
 interface UserSignupData {
     username: string;
@@ -50,7 +49,7 @@ export class UsersRouteController extends AbstractRouteController {
         this.router.post(`${this.path}/login`, this.loginUser);
     }
 
-    public async getUsers(req: Request, res: Response, next: NextFunction) {
+    public async getUsers(_req: Request, res: Response, next: NextFunction) {
         try {
             const users = await UsersService.getUsers();
             res.status(StatusConstants.CODE_200).json({ users });
@@ -71,7 +70,7 @@ export class UsersRouteController extends AbstractRouteController {
         const { username, email, password } = req.body;
 
         try {
-            const createdUser: IUser = await UsersService.signup(username, email, password);
+            const createdUser = await UsersService.signup(username, email, password);
             res.status(StatusConstants.CODE_201).json({ user: createdUser });
         } catch (e) {
             const error = e as ServiceError;
