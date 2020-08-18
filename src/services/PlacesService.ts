@@ -1,118 +1,137 @@
-import * as uuid from 'uuid';
-import { IPlace } from '../models';
+import { IPlace, IPlaceModel, Place } from '../models';
 import { ServiceError } from '../utils/errors/ServiceError';
 import { StatusConstants } from '../constants/StatusConstants';
 import { getCoordinatesForAddress } from '../utils/googleMapsGeoCoding';
 
-const DUMMY_PLACES: IPlace[] = [
-    {
-        id: 'p1',
-        title: 'Times Square',
-        address: 'New York',
-        description: 'Beautiful New York',
-        creatorId: 'u2',
-        imageURL: `https://akm-img-a-in.tosshub.com/sites/btmt/images/stories/times_square_505_040820090248.jpg?size=1200:675`,
-        location: {
-            lat: 40.758896,
-            lng: -73.985130,
-        }
-    },
-    {
-        id: 'p2',
-        title: 'Burj Khalifa',
-        address: 'Dubai',
-        description: 'Beautiful Dubai',
-        creatorId: 'u2',
-        imageURL: `https://media.tacdn.com/media/attractions-splice-spp-674x446/07/be/ec/eb.jpg`,
-        location: {
-            lat: 25.197525,
-            lng: 55.274288,
-        }
-    },
-];
-
 export class PlacesService {
-    public static async getPlace(placeId: string): Promise<IPlace> {
-        const place = DUMMY_PLACES.find(pl => pl.id === placeId);
+    public static async getPlace(placeId: string): Promise<IPlaceModel> {
+        let place: IPlaceModel | null;
 
-        if (!place) {
-            const error = new ServiceError(`place not found!`, StatusConstants.CODE_404);
+        try {
+            place = await Place.findById(placeId);
+        } catch (e) {
+            const error = new ServiceError(`fetching place failed, please try again`, StatusConstants.CODE_500);
             throw error;
         }
 
-        return Promise.resolve(place);
+        if (!place) {
+            const error = new ServiceError(`place not found`, StatusConstants.CODE_404);
+            throw error;
+        }
+
+        return Promise.resolve(place.toObject({ getters: true }));
     }
 
     public static async getAll(): Promise<IPlace[]> {
-        const places = DUMMY_PLACES;
+        let places: IPlaceModel[] = [];
+
+        try {
+            places = await Place.find();
+        } catch (e) {
+            const error = new ServiceError(`fetching places failed, please try again`, StatusConstants.CODE_500);
+            throw error;
+        }
 
         if (!places || places.length === 0) {
-            const error = new ServiceError(`places not found!`, StatusConstants.CODE_404);
+            const error = new ServiceError(`places not found`, StatusConstants.CODE_404);
             throw error;
         }
 
-        return Promise.resolve(places);
+        return Promise.resolve(places.map(placeModel => placeModel.toObject({ getters: true })));
     }
 
-    public static async getPlacesByUser(userId: string): Promise<IPlace[]> {
-        const userPlaces = DUMMY_PLACES.filter(pl => pl.creatorId === userId);
+    public static async getPlacesByUser(userId: string): Promise<IPlaceModel[]> {
+        let userPlaces: IPlaceModel[] = [];
+
+        try {
+            userPlaces = await Place.find({ creatorId: userId });
+        } catch (e) {
+            const error = new ServiceError(`fetching places failed, please try again`, StatusConstants.CODE_500);
+            throw error;
+        }
 
         if (!userPlaces || userPlaces.length === 0) {
-            const error = new ServiceError(`places not found!`, StatusConstants.CODE_404);
+            const error = new ServiceError(`could not find places for the provided user id`, StatusConstants.CODE_404);
             throw error;
         }
 
-        return Promise.resolve(userPlaces);
+        return Promise.resolve(userPlaces.map(placeModel => placeModel.toObject({ getters: true })));
     }
 
-    public static async createPlace(placeData: IPlace): Promise<IPlace> {
+    public static async createPlace(placeData: IPlace): Promise<IPlaceModel> {
 
         const coordinates = await getCoordinatesForAddress(placeData.address);
 
-        const place: IPlace = {
-            id: uuid.v4(),
+        const place = new Place(<IPlace>{
             title: placeData.title,
-            address: placeData.address,
-            creatorId: placeData.creatorId,
             description: placeData.description,
-            imageURL: `dummy-url-${placeData.title}`,
+            address: placeData.address,
+            imageURL: `https://media.tacdn.com/media/attractions-splice-spp-674x446/07/be/ec/eb.jpg`,
             location: coordinates,
-        };
+            creatorId: placeData.creatorId,
+        });
 
-        DUMMY_PLACES.push(place);
+        try {
+            const result = await place.save();
+            return Promise.resolve(result.toObject({ getters: true }));
 
-        return Promise.resolve(place);
+        } catch (e) {
+            const error = new ServiceError(`creating place failed, please try again`, StatusConstants.CODE_500);
+            throw error;
+        }
     }
 
-    public static async modifyPlace(placeId: string, placeData: IPlace): Promise<IPlace> {
-        const placeIndex = DUMMY_PLACES.findIndex(p => p.id === placeId);
+    public static async modifyPlace(placeId: string, placeData: IPlace): Promise<IPlaceModel> {
+        const { title, description } = placeData;
 
-        if (placeIndex === -1) {
-            const error = new ServiceError(`place not found!`, StatusConstants.CODE_404);
+        let placeToBeUpdated: IPlaceModel | null = null;
+        try {
+            placeToBeUpdated = await Place.findById(placeId);
+
+        } catch (e) {
+            const error = new ServiceError(`something went wrong, please try again`, StatusConstants.CODE_500);
             throw error;
         }
 
-        const { title, description } = placeData;
+        if (!placeToBeUpdated) {
+            const error = new ServiceError(`place not found`, StatusConstants.CODE_404);
+            throw error;
+        }
 
-        const updatedPlace: IPlace = {
-            ...DUMMY_PLACES[placeIndex],
-            title,
-            description,
-        };
+        placeToBeUpdated.title = title;
+        placeToBeUpdated.description = description;
 
-        DUMMY_PLACES[placeIndex] = updatedPlace;
+        try {
+            await placeToBeUpdated.save();
 
-        return Promise.resolve(updatedPlace);
+        } catch (e) {
+            const error = new ServiceError(`could not update the place, please try again`, StatusConstants.CODE_500);
+            throw error;
+        }
+
+        return Promise.resolve(placeToBeUpdated.toObject({ getters: true }));
     }
 
     public static async removePlace(placeId: string): Promise<void> {
-        const placeIndex = DUMMY_PLACES.findIndex(p => p.id === placeId);
+        let placeToBeDeleted: IPlaceModel | null = null;
+        try {
+            placeToBeDeleted = await Place.findById(placeId);
 
-        if (placeIndex === -1) {
-            const error = new ServiceError(`place not found!`, StatusConstants.CODE_404);
+        } catch (e) {
+            const error = new ServiceError(`something went wrong, please try again`, StatusConstants.CODE_500);
             throw error;
         }
 
-        DUMMY_PLACES.splice(placeIndex, 1);
+        if (!placeToBeDeleted) {
+            const error = new ServiceError(`place not found`, StatusConstants.CODE_404);
+            throw error;
+        }
+
+        try {
+            await placeToBeDeleted.remove();
+        } catch (e) {
+            const error = new ServiceError(`could not delete the place, please try again`, StatusConstants.CODE_500);
+            throw error;
+        }
     }
 }
