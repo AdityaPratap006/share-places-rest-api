@@ -1,4 +1,4 @@
-import { Schema, model, Document } from 'mongoose';
+import { Schema, model, Document, Types } from 'mongoose';
 export interface IPlace {
     title: string;
     description: string;
@@ -20,7 +20,7 @@ export const PlaceSchema = new Schema({
     description: { type: String, required: true },
     address: { type: String, required: true },
     imageURL: { type: String, required: true },
-    creatorId: { type: String, required: true },
+    creatorId: { type: Types.ObjectId, required: true, ref: 'User' },
     location: {
         lat: { type: Number, required: true },
         lng: { type: Number, required: true },

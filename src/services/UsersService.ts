@@ -42,7 +42,7 @@ export class UsersService {
             email,
             password,
             image: `https://gritdaily.com/wp-content/uploads/2020/08/John-Wick.jpg`,
-            places: '0',
+            places: [],
         })
 
         try {

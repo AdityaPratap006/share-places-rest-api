@@ -1,4 +1,5 @@
-import { IPlace, IPlaceModel, Place } from '../models';
+import mongoose, { Types } from 'mongoose';
+import { IPlace, IPlaceModel, Place, User, IUserModel } from '../models';
 import { ServiceError } from '../utils/errors/ServiceError';
 import { StatusConstants } from '../constants/StatusConstants';
 import { getCoordinatesForAddress } from '../utils/googleMapsGeoCoding';
@@ -62,7 +63,7 @@ export class PlacesService {
 
         const coordinates = await getCoordinatesForAddress(placeData.address);
 
-        const place = new Place(<IPlace>{
+        const createdPlace = new Place(<IPlace>{
             title: placeData.title,
             description: placeData.description,
             address: placeData.address,
@@ -71,14 +72,33 @@ export class PlacesService {
             creatorId: placeData.creatorId,
         });
 
+        let user: IUserModel | null;
         try {
-            const result = await place.save();
-            return Promise.resolve(result.toObject({ getters: true }));
+            user = await User.findById(placeData.creatorId);
+        } catch (e) {
+            const error = new ServiceError(`creating place failed, please try again`, StatusConstants.CODE_500);
+            throw error;
+        }
+
+        if (!user) {
+            const error = new ServiceError(`could not find user for provided creatorId`, StatusConstants.CODE_404);
+            throw error;
+        }
+
+        try {
+            const session = await mongoose.startSession();
+            session.startTransaction();
+            await createdPlace.save({ session: session });
+            user.places.push(createdPlace.id);
+            await user.save({ session: session });
+            await session.commitTransaction();
 
         } catch (e) {
             const error = new ServiceError(`creating place failed, please try again`, StatusConstants.CODE_500);
             throw error;
         }
+
+        return Promise.resolve(createdPlace.toObject({ getters: true }));
     }
 
     public static async modifyPlace(placeId: string, placeData: IPlace): Promise<IPlaceModel> {
