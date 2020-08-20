@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { IPlace, IPlaceModel, Place, User, IUserModel } from '../models';
+import { IPlace, IPlaceModel, Place, User, IUserModel, UserSchema } from '../models';
 import { ServiceError } from '../utils/errors/ServiceError';
 import { StatusConstants } from '../constants/StatusConstants';
 import { getCoordinatesForAddress } from '../utils/googleMapsGeoCoding';
@@ -148,7 +148,22 @@ export class PlacesService {
         }
 
         try {
-            await placeToBeDeleted.remove();
+            const session = await mongoose.startSession();
+
+            session.startTransaction();
+
+            await Place.deleteOne(
+                { _id: placeToBeDeleted.id },
+            ).session(session);
+
+            await User.findOneAndUpdate(
+                { _id: placeToBeDeleted.creatorId, },
+                { $pull: { places: placeToBeDeleted.id } },
+                { useFindAndModify: false, }
+            ).session(session);
+
+            await session.commitTransaction();
+
         } catch (e) {
             const error = new ServiceError(`could not delete the place, please try again`, StatusConstants.CODE_500);
             throw error;
