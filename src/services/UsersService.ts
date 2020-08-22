@@ -70,6 +70,6 @@ export class UsersService {
             throw error;
         }
 
-        return Promise.resolve(identifiedUser);
+        return Promise.resolve(identifiedUser.toObject({ getters: true }));
     }
 }
