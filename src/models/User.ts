@@ -18,6 +18,7 @@ export const UserSchema = new Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true, minlength: 6 },
     profilePic: { type: String, required: true },
+    profilePicId: { type: String, required: true },
     places: [{ type: Types.ObjectId, required: true, ref: 'Place' }],
 });
 

@@ -1,8 +1,9 @@
 import mongoose from 'mongoose';
-import { IPlace, IPlaceModel, Place, User, IUserModel, UserSchema } from '../models';
+import { IPlace, IPlaceRequest, IPlaceModel, Place, User, IUserModel } from '../models';
 import { ServiceError } from '../utils/errors/ServiceError';
 import { StatusConstants } from '../constants/StatusConstants';
 import { getCoordinatesForAddress } from '../utils/googleMapsGeoCoding';
+import { cloudinary } from '../utils/cloudinaryImageUpload';
 
 export class PlacesService {
     public static async getPlace(placeId: string): Promise<IPlaceModel> {
@@ -59,18 +60,9 @@ export class PlacesService {
         return Promise.resolve(userPlaces.map(placeModel => placeModel.toObject({ getters: true })));
     }
 
-    public static async createPlace(placeData: IPlace): Promise<IPlaceModel> {
+    public static async createPlace(placeData: IPlaceRequest): Promise<IPlaceModel> {
 
         const coordinates = await getCoordinatesForAddress(placeData.address);
-
-        const createdPlace = new Place(<IPlace>{
-            title: placeData.title,
-            description: placeData.description,
-            address: placeData.address,
-            imageURL: `https://media.tacdn.com/media/attractions-splice-spp-674x446/07/be/ec/eb.jpg`,
-            location: coordinates,
-            creatorId: placeData.creatorId,
-        });
 
         let user: IUserModel | null;
         try {
@@ -84,6 +76,31 @@ export class PlacesService {
             const error = new ServiceError(`could not find user for provided creatorId`, StatusConstants.CODE_404);
             throw error;
         }
+
+        let placePicUrl: string | undefined;
+        let placePicId: string | undefined;
+        try {
+            const uploadResponse = await cloudinary.uploader.upload(placeData.imageFileString, {
+                upload_preset: 'places',
+            });
+
+            placePicUrl = uploadResponse.secure_url;
+            placePicId = uploadResponse.public_id;
+
+        } catch (e) {
+            const error = new ServiceError(`something went wrong, please try again`, StatusConstants.CODE_500);
+            throw error;
+        }
+
+        const createdPlace = new Place(<IPlace>{
+            title: placeData.title,
+            description: placeData.description,
+            address: placeData.address,
+            imageURL: placePicUrl,
+            imageId: placePicId,
+            location: coordinates,
+            creatorId: placeData.creatorId,
+        });
 
         try {
             const session = await mongoose.startSession();
@@ -101,7 +118,7 @@ export class PlacesService {
         return Promise.resolve(createdPlace.toObject({ getters: true }));
     }
 
-    public static async modifyPlace(placeId: string, placeData: IPlace): Promise<IPlaceModel> {
+    public static async modifyPlace(placeId: string, placeData: IPlaceRequest): Promise<IPlaceModel> {
         const { title, description } = placeData;
 
         let placeToBeUpdated: IPlaceModel | null = null;
