@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs';
 import { IUser, IUserModel, User } from '../models';
 import { ServiceError } from '../utils/errors/ServiceError';
 import { StatusConstants } from '../constants/StatusConstants';
@@ -53,10 +54,18 @@ export class UsersService {
             throw error;
         }
 
+        let hashedPassword: string | undefined;
+        try {
+            hashedPassword = await bcrypt.hash(password, 12);
+        } catch (e) {
+            const error = new ServiceError(`signing up failed, please try again`, StatusConstants.CODE_500);
+            throw error;
+        }
+
         const createdUser = new User(<IUser>{
             name: username,
             email,
-            password,
+            password: hashedPassword,
             profilePic: profilePicUrl,
             profilePicId: profilePicId,
             places: [],
