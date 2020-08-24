@@ -165,6 +165,13 @@ export class PlacesService {
         }
 
         try {
+            await cloudinary.uploader.destroy(placeToBeDeleted.imageId);
+        } catch (e) {
+            const error = new ServiceError(`something went wrong, please try again`, StatusConstants.CODE_500);
+            throw error;
+        }
+
+        try {
             const session = await mongoose.startSession();
 
             session.startTransaction();
