@@ -4,7 +4,8 @@ export interface IUser {
     name: string;
     email: string;
     password: string;
-    image: string;
+    profilePic: string;
+    profilePicId: string;
     places: string[];
 }
 
@@ -16,7 +17,7 @@ export const UserSchema = new Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true, minlength: 6 },
-    image: { type: String, required: true },
+    profilePic: { type: String, required: true },
     places: [{ type: Types.ObjectId, required: true, ref: 'Place' }],
 });
 

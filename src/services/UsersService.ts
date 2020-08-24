@@ -1,6 +1,7 @@
 import { IUser, IUserModel, User } from '../models';
 import { ServiceError } from '../utils/errors/ServiceError';
 import { StatusConstants } from '../constants/StatusConstants';
+import { cloudinary } from '../utils/cloudinaryImageUpload';
 
 export class UsersService {
     public static async getUsers(): Promise<IUserModel[]> {
@@ -21,7 +22,7 @@ export class UsersService {
         return Promise.resolve(users.map(u => u.toObject({ getters: true })));
     }
 
-    public static async signup(username: string, email: string, password: string): Promise<IUserModel> {
+    public static async signup(username: string, email: string, password: string, profilePicFileString: string): Promise<IUserModel> {
 
         let existingUser: IUserModel | null;
 
@@ -37,13 +38,29 @@ export class UsersService {
             throw error;
         }
 
+        let profilePicUrl: string | undefined;
+        let profilePicId: string | undefined;
+        try {
+            const uploadResponse = await cloudinary.uploader.upload(profilePicFileString, {
+                upload_preset: 'users',
+            });
+
+            profilePicUrl = uploadResponse.secure_url;
+            profilePicId = uploadResponse.public_id;
+
+        } catch (e) {
+            const error = new ServiceError(`something went wrong, please try again`, StatusConstants.CODE_500);
+            throw error;
+        }
+
         const createdUser = new User(<IUser>{
             name: username,
             email,
             password,
-            image: `https://gritdaily.com/wp-content/uploads/2020/08/John-Wick.jpg`,
+            profilePic: profilePicUrl,
+            profilePicId: profilePicId,
             places: [],
-        })
+        });
 
         try {
             await createdUser.save();

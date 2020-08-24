@@ -9,6 +9,7 @@ interface UserSignupData {
     username: string;
     email: string;
     password: string;
+    profilePic: string;
 }
 
 interface UserLoginData {
@@ -40,6 +41,7 @@ export class UsersRouteController extends AbstractRouteController {
                 check('username').not().isEmpty(),
                 check('email').normalizeEmail().isEmail(),
                 check('password').isLength({ min: 6 }),
+                // check('profilePic').not().isEmpty(),
             ],
             this.signupUser
         );
@@ -67,16 +69,14 @@ export class UsersRouteController extends AbstractRouteController {
             return;
         }
 
-        const { username, email, password } = req.body;
-
+        const { username, email, password, profilePic } = req.body;
         try {
-            const createdUser = await UsersService.signup(username, email, password);
+            const createdUser = await UsersService.signup(username, email, password, profilePic);
             res.status(StatusConstants.CODE_201).json({ user: createdUser });
         } catch (e) {
             const error = e as ServiceError;
             next(error);
         }
-
     }
 
     public async loginUser(req: Request<{}, {}, UserLoginData>, res: Response, next: NextFunction) {
