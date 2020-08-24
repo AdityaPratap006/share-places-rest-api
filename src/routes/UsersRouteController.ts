@@ -72,7 +72,7 @@ export class UsersRouteController extends AbstractRouteController {
         const { username, email, password, profilePic } = req.body;
         try {
             const createdUser = await UsersService.signup(username, email, password, profilePic);
-            res.status(StatusConstants.CODE_201).json({ user: createdUser });
+            res.status(StatusConstants.CODE_201).json({ ...createdUser });
         } catch (e) {
             const error = e as ServiceError;
             next(error);
@@ -84,7 +84,7 @@ export class UsersRouteController extends AbstractRouteController {
 
         try {
             const user = await UsersService.login(email, password);
-            res.status(StatusConstants.CODE_200).json({ user });
+            res.status(StatusConstants.CODE_200).json({ ...user });
         } catch (e) {
             const error = e as ServiceError;
             next(error);
