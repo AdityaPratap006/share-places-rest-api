@@ -11,7 +11,9 @@ export class CommonMiddleware {
     }
 
     public async useBodyParser() {
-        this.app.use(bodyParser.json());
+        this.app.use(bodyParser.json({
+            limit: '10mb',
+        }));
     }
 
     public async useURLencoded() {
