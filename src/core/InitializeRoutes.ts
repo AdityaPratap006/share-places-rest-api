@@ -17,8 +17,11 @@ export class InitializeRoutes {
     public static async getRoutes(): Promise<AbstractRouteController[]> {
         let routes: AbstractRouteController[] = [];
 
-        routes.push(new PlacesRouteController());
+        // Add places controller after users controller 
+        // as some places routes use authentication middleware
+        // and we don't want users routes to use it.
         routes.push(new UsersRouteController());
+        routes.push(new PlacesRouteController());
 
         return Promise.resolve(routes);
     }

@@ -9,6 +9,12 @@ export interface IUser {
     places: string[];
 }
 
+export interface UserResponseData {
+    userId: string;
+    email: string;
+    token: string;
+}
+
 export interface IUserModel extends IUser, Document {
 
 }

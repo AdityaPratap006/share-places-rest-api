@@ -1,15 +1,9 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { IUser, IUserModel, User } from '../models';
+import { IUser, IUserModel, User, UserResponseData } from '../models';
 import { ServiceError } from '../utils/errors/ServiceError';
 import { StatusConstants } from '../constants/StatusConstants';
 import { cloudinary } from '../utils/cloudinaryImageUpload';
-
-interface UserResponseData {
-    userId: string;
-    email: string;
-    token: string;
-}
 
 export class UsersService {
     public static async getUsers(): Promise<IUserModel[]> {

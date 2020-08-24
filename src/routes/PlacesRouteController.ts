@@ -4,7 +4,8 @@ import { AbstractRouteController } from './AbstractRouteController';
 import { StatusConstants } from '../constants/StatusConstants';
 import { PlacesService } from '../services/PlacesService';
 import { ServiceError } from '../utils/errors/ServiceError';
-import { IPlace, IPlaceRequest } from '../models';
+import { IPlaceRequest } from '../models';
+import { AuthMiddleware } from '../middleware/AuthMiddleware';
 
 export class PlacesRouteController extends AbstractRouteController {
 
@@ -18,6 +19,9 @@ export class PlacesRouteController extends AbstractRouteController {
         await this.InitializeGetPlaceById();
         await this.InitializeGetAllPlaces();
         await this.InitializeGetUserPlaces();
+
+        await this.InitializeAuthMiddleware();
+
         await this.InitializePostPlace();
         await this.InitializeUpdatePlace();
         await this.InitializeDeletePlace();
@@ -33,6 +37,10 @@ export class PlacesRouteController extends AbstractRouteController {
 
     public async InitializeGetUserPlaces() {
         this.router.get(`${this.path}/user/:uid`, this.getUserPlaces);
+    }
+
+    public async InitializeAuthMiddleware() {
+        this.router.use(AuthMiddleware.useAuth);
     }
 
     public async InitializePostPlace() {
