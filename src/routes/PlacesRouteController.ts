@@ -115,7 +115,12 @@ export class PlacesRouteController extends AbstractRouteController {
             return;
         }
 
-        const placeData = req.body;
+        let placeData = req.body;
+
+        placeData = {
+            ...placeData,
+            creatorId: <string>req.userData?.userId,
+        }
 
         try {
             const place = await PlacesService.createPlace(placeData);
