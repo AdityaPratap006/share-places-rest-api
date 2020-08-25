@@ -4,6 +4,7 @@ export enum StatusConstants {
     CODE_202 = 202,
     CODE_204 = 204,
     CODE_401 = 401,
+    CODE_403 = 403,
     CODE_404 = 404,
     CODE_422 = 422,
     CODE_500 = 500,

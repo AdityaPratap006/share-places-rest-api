@@ -118,7 +118,7 @@ export class PlacesService {
         return Promise.resolve(createdPlace.toObject({ getters: true }));
     }
 
-    public static async modifyPlace(placeId: string, placeData: IPlaceRequest): Promise<IPlaceModel> {
+    public static async modifyPlace(placeId: string, placeData: IPlaceRequest, userId: string): Promise<IPlaceModel> {
         const { title, description } = placeData;
 
         let placeToBeUpdated: IPlaceModel | null = null;
@@ -132,6 +132,11 @@ export class PlacesService {
 
         if (!placeToBeUpdated) {
             const error = new ServiceError(`place not found`, StatusConstants.CODE_404);
+            throw error;
+        }
+
+        if (placeToBeUpdated.creatorId.toString() !== userId) {
+            const error = new ServiceError(`you are not allowed to edit this place.`, StatusConstants.CODE_401);
             throw error;
         }
 
@@ -149,7 +154,7 @@ export class PlacesService {
         return Promise.resolve(placeToBeUpdated.toObject({ getters: true }));
     }
 
-    public static async removePlace(placeId: string): Promise<void> {
+    public static async removePlace(placeId: string, userId: string): Promise<void> {
         let placeToBeDeleted: IPlaceModel | null = null;
         try {
             placeToBeDeleted = await Place.findById(placeId);
@@ -161,6 +166,11 @@ export class PlacesService {
 
         if (!placeToBeDeleted) {
             const error = new ServiceError(`place not found`, StatusConstants.CODE_404);
+            throw error;
+        }
+
+        if (placeToBeDeleted.creatorId.toString() !== userId) {
+            const error = new ServiceError(`you are not allowed to delete this place.`, StatusConstants.CODE_401);
             throw error;
         }
 

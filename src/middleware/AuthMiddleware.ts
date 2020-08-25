@@ -39,7 +39,7 @@ export class AuthMiddleware {
             req.userData = { userId: decodedToken.userId };
             next();
         } catch (e) {
-            const error = new ServiceError(`Authentication failed!`, StatusConstants.CODE_401);
+            const error = new ServiceError(`Authentication failed!`, StatusConstants.CODE_403);
             next(error);
             return;
         }

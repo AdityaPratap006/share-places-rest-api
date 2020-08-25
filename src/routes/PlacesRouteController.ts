@@ -140,7 +140,7 @@ export class PlacesRouteController extends AbstractRouteController {
         const placeData = req.body;
 
         try {
-            const place = await PlacesService.modifyPlace(placeId, placeData);
+            const place = await PlacesService.modifyPlace(placeId, placeData, req.userData?.userId as string);
 
             res.status(StatusConstants.CODE_200).json({ place });
         } catch (e) {
@@ -153,7 +153,7 @@ export class PlacesRouteController extends AbstractRouteController {
         const placeId = req.params.pid;
 
         try {
-            await PlacesService.removePlace(placeId);
+            await PlacesService.removePlace(placeId, req.userData?.userId as string);
 
             res.status(StatusConstants.CODE_200).json({
                 message: `deleted place with id: ${placeId}`,

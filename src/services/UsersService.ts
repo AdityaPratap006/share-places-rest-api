@@ -110,7 +110,7 @@ export class UsersService {
         }
 
         if (!identifiedUser) {
-            const error = new ServiceError(`invalid credentials, please try again`, StatusConstants.CODE_401);
+            const error = new ServiceError(`invalid credentials, please try again`, StatusConstants.CODE_403);
             throw error;
         }
 
@@ -123,7 +123,7 @@ export class UsersService {
         }
 
         if (!isValidPassword) {
-            const error = new ServiceError(`invalid credentials, please try again`, StatusConstants.CODE_401);
+            const error = new ServiceError(`invalid credentials, please try again`, StatusConstants.CODE_403);
             throw error;
         }
 
