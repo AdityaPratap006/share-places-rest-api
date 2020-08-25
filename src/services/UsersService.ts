@@ -4,7 +4,14 @@ import { IUser, IUserModel, User, UserResponseData } from '../models';
 import { ServiceError } from '../utils/errors/ServiceError';
 import { StatusConstants } from '../constants/StatusConstants';
 import { cloudinary } from '../utils/cloudinaryImageUpload';
+import { config } from 'dotenv';
+import { resolve } from 'path';
 
+config({
+    path: resolve(__dirname, "../../.env"),
+});
+
+const privateKey = process.env['JWT_PRIVATE_KEY'];
 export class UsersService {
     public static async getUsers(): Promise<IUserModel[]> {
         let users: IUserModel[] = [];
@@ -84,7 +91,7 @@ export class UsersService {
             token = jwt.sign({
                 userId: createdUser.id,
                 email: createdUser.email,
-            }, 'supersecret_dont_share', { expiresIn: '2h', });
+            }, `${privateKey}`, { expiresIn: '2h', });
         } catch (e) {
             const error = new ServiceError(`signing up failed, please try again`, StatusConstants.CODE_500);
             throw error;
@@ -132,7 +139,7 @@ export class UsersService {
             token = jwt.sign({
                 userId: identifiedUser.id,
                 email: identifiedUser.email,
-            }, 'supersecret_dont_share', { expiresIn: '2h', });
+            }, `${privateKey}`, { expiresIn: '2h', });
         } catch (e) {
             const error = new ServiceError(`logging in failed, please try again`, StatusConstants.CODE_500);
             throw error;

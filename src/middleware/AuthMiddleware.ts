@@ -1,8 +1,14 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { ServiceError } from '../utils/errors/ServiceError';
 import { StatusConstants } from '../constants/StatusConstants';
 import { UserResponseData } from '../models';
+import { config } from 'dotenv';
+import { resolve } from 'path';
+
+config({
+    path: resolve(__dirname, "../../.env"),
+});
 
 declare global {
     namespace Express {
@@ -35,7 +41,8 @@ export class AuthMiddleware {
                 throw new Error();
             }
 
-            const decodedToken = <UserResponseData>jwt.verify(token, 'supersecret_dont_share');
+            const privateKey = process.env['JWT_PRIVATE_KEY'];
+            const decodedToken = <UserResponseData>jwt.verify(token, `${privateKey}`);
             req.userData = { userId: decodedToken.userId };
             next();
         } catch (e) {
