@@ -1,6 +1,5 @@
-import { Express, Request, Response, NextFunction } from 'express';
+import express, { Express, Request, Response, NextFunction } from 'express';
 import { Logger } from '../utils/logger/Logger';
-import bodyParser from 'body-parser';
 import cors from 'cors';
 
 export class CommonMiddleware {
@@ -11,14 +10,14 @@ export class CommonMiddleware {
     }
 
     public async useBodyParser() {
-        this.app.use(bodyParser.json({
+        this.app.use(express.json({
             limit: '10mb',
         }));
     }
 
     public async useURLencoded() {
         this.app.use(
-            bodyParser.urlencoded({
+            express.urlencoded({
                 extended: true,
             })
         );
